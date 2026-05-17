@@ -36,3 +36,10 @@
 .service-description {
   color: var(--text-color-muted);
 }
+@media (max-width: 992px) {
+  .services-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+  .services-grid { grid-template-columns: 1fr; }
+  .service-card { padding: 30px 20px; }
+}

@@ -88,3 +88,11 @@
 .solution-link:hover {
   color: #fff;
 }
+@media (max-width: 992px) {
+  .solution-card, .solution-card.reverse { flex-direction: column; text-align: center; }
+  .solution-content { padding-right: 0 !important; padding-left: 0 !important; margin-bottom: 30px; }
+  .solution-card ul { display: inline-block; text-align: left; }
+}
+@media (max-width: 768px) {
+  .solution-card { padding: 30px 20px; }
+}
