@@ -7,17 +7,56 @@ const ContactSection = () => {
     company: '',
     email: '',
     phone: '',
-    message: ''
+    message: '',
+    botcheck: '' // Honeypot
   });
+  
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert('¡Gracias por tu mensaje! Nos pondremos en contacto contigo pronto.');
-    setFormData({ name: '', company: '', email: '', phone: '', message: '' });
+    setIsSubmitting(true);
+    setSubmitStatus(null);
+    
+    // Si un bot llena el honeypot, lo bloqueamos silenciosamente
+    if (formData.botcheck) {
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      const res = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          access_key: import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || "bfe7a958-debf-46c0-9973-cd565fcde9d2",
+          subject: `Nuevo Proyecto B2B: ${formData.company} - ${formData.name}`,
+          from_name: formData.name,
+          ...formData
+        }),
+      });
+      
+      const json = await res.json();
+      
+      if (json.success) {
+        setSubmitStatus('success');
+        setFormData({ name: '', company: '', email: '', phone: '', message: '', botcheck: '' });
+      } else {
+        setSubmitStatus('error');
+      }
+    } catch (error) {
+      setSubmitStatus('error');
+    }
+    
+    setIsSubmitting(false);
   };
 
   return (
@@ -27,44 +66,74 @@ const ContactSection = () => {
           
           {/* Left Column: Form */}
           <div className="contact-form-card glass">
-            <h2>¿Listo para transformar tu empresa con tecnología?</h2>
-            <p className="contact-subtitle">
-              ¡Coméntanos tus dudas! Comienza hoy con la implementación de <span className="text-primary" style={{fontWeight: 'bold'}}>IA</span> en tu empresa y <span className="text-secondary" style={{fontWeight: 'bold'}}>automatiza</span> el éxito.
-            </p>
-            
-            <form onSubmit={handleSubmit} className="diagnostic-form">
-              <div className="form-group">
-                <label htmlFor="name">Nombre *</label>
-                <input type="text" id="name" name="name" required value={formData.name} onChange={handleChange} />
-              </div>
-              
-              <div className="form-group">
-                <label htmlFor="company">Empresa *</label>
-                <input type="text" id="company" name="company" required value={formData.company} onChange={handleChange} />
-              </div>
-              
-              <div className="form-group">
-                <label htmlFor="email">Correo Electrónico *</label>
-                <input type="email" id="email" name="email" required value={formData.email} onChange={handleChange} />
-              </div>
-              
-              <div className="form-group">
-                <label htmlFor="phone">WhatsApp o Teléfono *</label>
-                <input type="tel" id="phone" name="phone" required value={formData.phone} onChange={handleChange} />
-              </div>
-              
-              <div className="form-group">
-                <label htmlFor="message">¿Qué necesita automatizar? *</label>
-                <textarea id="message" name="message" rows="4" required value={formData.message} onChange={handleChange}></textarea>
-              </div>
-              
-              <button type="submit" className="btn btn-primary form-submit">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style={{marginRight: '8px'}}>
-                  <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
+            {submitStatus === 'success' ? (
+              <div className="success-message">
+                <svg viewBox="0 0 24 24" width="60" height="60" fill="var(--primary-color)" style={{marginBottom: '20px'}}>
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                 </svg>
-                Enviar mensaje
-              </button>
-            </form>
+                <h2>¡Solicitud Recibida!</h2>
+                <p className="contact-subtitle">
+                  Hemos recibido los detalles de tu proyecto. Nuestro equipo analizará la información y se comunicará contigo a la brevedad para coordinar el diagnóstico.
+                </p>
+                <button onClick={() => setSubmitStatus(null)} className="btn btn-outline-cyan" style={{marginTop: '20px'}}>
+                  Enviar otro mensaje
+                </button>
+              </div>
+            ) : (
+              <>
+                <h2>¿Listo para transformar tu empresa con tecnología?</h2>
+                <p className="contact-subtitle">
+                  ¡Coméntanos tus dudas! Comienza hoy con la implementación de <span className="text-primary" style={{fontWeight: 'bold'}}>IA</span> en tu empresa y <span className="text-secondary" style={{fontWeight: 'bold'}}>automatiza</span> el éxito.
+                </p>
+                
+                <form onSubmit={handleSubmit} className="diagnostic-form">
+                  {/* Honeypot anti-spam */}
+                  <input type="checkbox" name="botcheck" className="hidden" style={{ display: 'none' }} onChange={handleChange} />
+
+                  <div className="form-group">
+                    <label htmlFor="name">Nombre *</label>
+                    <input type="text" id="name" name="name" required value={formData.name} onChange={handleChange} />
+                  </div>
+                  
+                  <div className="form-group">
+                    <label htmlFor="company">Empresa *</label>
+                    <input type="text" id="company" name="company" required value={formData.company} onChange={handleChange} />
+                  </div>
+                  
+                  <div className="form-group">
+                    <label htmlFor="email">Correo Electrónico *</label>
+                    <input type="email" id="email" name="email" required value={formData.email} onChange={handleChange} />
+                  </div>
+                  
+                  <div className="form-group">
+                    <label htmlFor="phone">WhatsApp o Teléfono *</label>
+                    <input type="tel" id="phone" name="phone" required value={formData.phone} onChange={handleChange} />
+                  </div>
+                  
+                  <div className="form-group">
+                    <label htmlFor="message">¿Qué necesita automatizar? *</label>
+                    <textarea id="message" name="message" rows="4" required value={formData.message} onChange={handleChange}></textarea>
+                  </div>
+                  
+                  {submitStatus === 'error' && (
+                    <div style={{color: '#ff4d4f', marginBottom: '15px', fontSize: '0.9rem'}}>
+                      Hubo un problema enviando tu mensaje. Por favor, intenta usar WhatsApp o Correo directamente.
+                    </div>
+                  )}
+
+                  <button type="submit" className="btn btn-primary form-submit" disabled={isSubmitting}>
+                    {isSubmitting ? 'Enviando...' : (
+                      <>
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style={{marginRight: '8px'}}>
+                          <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
+                        </svg>
+                        Enviar mensaje
+                      </>
+                    )}
+                  </button>
+                </form>
+              </>
+            )}
           </div>
 
           {/* Right Column: Direct Contact */}
