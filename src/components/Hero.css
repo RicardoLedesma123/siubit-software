@@ -79,10 +79,8 @@
 }
 
 @media (max-width: 768px) {
-  .hero {
-    padding-top: 140px;
-  }
   .hero-content {
+    margin-top: 120px;
     padding-top: 0;
   }
 }
