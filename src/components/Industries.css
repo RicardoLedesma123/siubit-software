@@ -1,0 +1,58 @@
+.industries {
+  padding: 80px 0;
+  background-color: var(--bg-default);
+  position: relative;
+  overflow: hidden;
+}
+
+.industries::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, var(--primary-color) 0%, transparent 60%);
+  opacity: 0.05;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.industries-header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.industries-scroll {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.industry-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 24px;
+  border-radius: 50px;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+  border: 1px solid var(--border-color);
+}
+
+.industry-item:hover {
+  transform: translateY(-5px);
+  border-color: var(--primary-color);
+  background-color: rgba(0, 174, 239, 0.1);
+  box-shadow: 0 5px 15px rgba(0, 174, 239, 0.2);
+}
+
+.industry-icon {
+  font-size: 1.5rem;
+}
+
+.industry-name {
+  font-weight: 500;
+  color: #fff;
+}

@@ -1,0 +1,40 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  padding: 24px 0;
+  transition: all var(--transition-speed) ease;
+}
+
+.header.scrolled {
+  padding: 16px 0;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-logo-img {
+  height: 80px;
+  object-fit: contain;
+  display: block;
+}
+
+.nav-list {
+  display: flex;
+  gap: 32px;
+}
+
+.nav-list a {
+  font-weight: 500;
+  color: var(--text-color-muted);
+}
+
+.nav-list a:hover {
+  color: var(--primary-color);
+}
